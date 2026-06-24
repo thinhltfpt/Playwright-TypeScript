@@ -50,6 +50,7 @@ test.only('Browser Context - Validating dropdown', async ({page}) => {
     const dropdown = page.locator('//select[@id="murexEventsandNews"]');
     await dropdown.waitFor({ state: 'visible' });
     dropdown.selectOption("Yes");
-    //checkk
+    //checkk 
+    // Bosch branch
     await page.pause();
 });
