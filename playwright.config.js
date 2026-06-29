@@ -11,16 +11,24 @@ const config = {
 
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/doc */
-  use: {
+  // use: {
 
-    browserName : 'chromium',
-    headless : false,
+  //   browserName : 'chromium',
+  //   headless : false,
+  //   launchOptions: {
+  //     args: ['--start-maximized']
+  //   },
+  //   viewport: null
+
+  // },
+  use: {
+    browserName: 'chromium',
+    headless: true,
     launchOptions: {
       args: ['--start-maximized']
     },
     viewport: null
-
-  },
+},
 
 };
 
