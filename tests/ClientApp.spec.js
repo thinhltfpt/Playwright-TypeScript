@@ -30,7 +30,7 @@ test('Browser Context - Validating error login', async ({page}) => {
 
 });
 
-test.only('Browser Context - Validating dropdown', async ({page}) => {
+test('Browser Context - Validating dropdown', async ({page}) => {
     test.setTimeout(60000)
     await page.goto('https://murex.wd3.myworkdayjobs.com/en-US/MurexCareerPage1/login');
     await page.locator('//button[text()="Accept Cookies"]').click();
@@ -52,4 +52,23 @@ test.only('Browser Context - Validating dropdown', async ({page}) => {
     dropdown.selectOption("Yes");
     await page.pause();
     
+});
+
+test('Handling browser tabs', async ({browser}) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
+    const [newPage] = await Promise.all([
+        context.waitForEvent('page'),
+        page.locator("//a[contains(@href,'documents-request')]").click()
+    ]);
+    await newPage.waitForLoadState();
+    const loginButton = newPage.locator('//a[text()="Login"]');
+    await expect(loginButton).toBeVisible();
+    console.log('New tab URL:', newPage.url());
+    const title = await newPage.title();
+    await page.locator('//input[@id="username"]').fill('Le Tien Thinh');
+    console.log(await page.locator('//input[@id="username"]').inputValue());
+    await page.pause();
+    await newPage.close();
 });
