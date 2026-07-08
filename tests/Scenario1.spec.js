@@ -50,29 +50,51 @@ test.only('Handling 2', async ({browser}) => {
 
     await page.locator("//button[text()='  Cart ']").click();
     await page.locator("//button[text()='Buy Now']").click();
-
+    
     await page.locator("[placeholder='Select Country']")
-          .pressSequentially("vi");
-
+    .pressSequentially("vi");
+    
     const options = page.locator(".ta-item");
-
+    
     await expect(options.first()).toBeVisible();
-
+    
     const count = await options.count();
-
+    
     for (let i = 0; i < count; i++) {
         const option = options.nth(i);
-
+        
         const text = (await option.textContent())?.trim();
-
+        
         if (text === "Vietnam") {
             await option.click();
             break;
         }
     }
     console.log(await page.locator("[placeholder='Select Country']").inputValue());   
-
+    await page.locator("//a[text()='Place Order ']").click();
+    const textId = await page.locator("//label[contains(@class,'inserted')]").textContent();
+    const orderId = textId.split("|")[1].trim();
+    console.log("Order ID:", orderId);
+    await page.locator("//button[text()='  ORDERS']").click();  
     
+    await page.locator("//tbody").first().waitFor({ state: 'visible' });
+    const orders = await page.locator("//tbody//th");
+    await orders.first().waitFor({ state: 'visible' });
+    const texts = await orders.allTextContents();
+    expect(texts.includes(orderId)).toBeTruthy();
+
+    //count thì nhớ thêm waitFor visible cho element trước khi count, nếu không sẽ bị lỗi
+    for (let i = 0; i < await orders.count(); i++) {
+        const orderNameRow = await orders.nth(i).textContent();
+        if ((await orderNameRow)?.trim() === orderId) {
+            await orders.nth(i).locator("xpath=following-sibling::td//button[text()='View']").click();
+            console.log(await orders.nth(i).locator("xpath=following-sibling::td//button[text()='View']").count());
+            break;
+        }
+    }
+    const orderDetails = await page.locator("//small/following-sibling::div").textContent();
+    expect(orderId.includes(await orderDetails)).toBeTruthy();
+    console.log("Order Details:", orderDetails);
 
 await page.pause();
 });
